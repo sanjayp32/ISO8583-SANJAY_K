@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataElement.cs" />
+    <Compile Include="EmvTags.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="MessageFactory.cs" />
     <Compile Include="PinPanBlock.cs" />
