@@ -5,42 +5,51 @@ using System.Security.Cryptography;
 using System.Text;
 namespace Iso_sanjay
 {
-    class PinPanBlock
+    class PinTranslator
     {
-        private static string PanBlock(string track2Data)
+       private static string PanBlock(string track2Data)
         {
-            string[] parts = track2Data.Split('=');
-            string pannum = parts[0].Substring(1);
-            pannum = pannum.Substring(0, pannum.Length - 1);
-            int len = pannum.Length;
-            if (len <= 12)
+            String clearPinBlock = string.Empty;
+            string pan = string.Empty;
+
+            var index = track2Data.IndexOf('=');
+            //Console.WriteLine(index);
+            if (index < 0)
             {
-                pannum = pannum.PadLeft(16, '0');
+                index = track2Data.IndexOf('D');
             }
-            else if (len >= 13)
+            if (index < 0)
             {
-                pannum = pannum.Substring(len - 12);
-                StringBuilder sb = new StringBuilder(pannum);
-                sb.Insert(0, "0000");
-                pannum = sb.ToString();
+                Console.WriteLine("Track2 not Valid");
+                return null;
             }
-            return pannum;
-        }
-        private static string PinBlock(string pin)
-        {
-            int len = pin.Length; string pinblock = "";
-            if (len >= 10)
+
+            pan = track2Data.Substring(0, index);
+            //Console.WriteLine(pan);
+            pan = pan.PadRight(16, '0');
+
+            string account = pan.Substring(0, pan.Length - 1);
+            account = account.Substring(account.Length - 12, 12);
+            if (account.Length < 12)
             {
-                string lenn = len.ToString("X");
-                pinblock = "0" + lenn + pin;
-                pinblock = pinblock.PadRight(16, 'F');
+                Console.WriteLine("Account must be equal to greater than 12");
+                return null;
             }
             else
             {
-                pinblock = "0" + len + pin;
-                pinblock = pinblock.PadRight(16, 'F');
+                clearPinBlock = account.PadLeft(16, '0');
 
+                return clearPinBlock;
             }
+        }
+
+        private static string PinBlock(string pin)
+        {
+            string pinblock = "";
+            int len = pin.Length;
+            pinblock = ("0" + len.ToString("X") + pin);
+            pinblock = pinblock.PadRight(16, 'F');
+
             return pinblock;
         }
         private static string PinpanBlock(string hexString1, string hexString2)
@@ -100,7 +109,7 @@ namespace Iso_sanjay
         public static string Encryption(List<DataElement> requiredDataelements)
         {
             string pin = "1234";
-            string pinblock = PinPanBlock.PinBlock(pin);
+            string pinblock = PinTranslator.PinBlock(pin);
             string pan = "";
             foreach (DataElement dataElement in requiredDataelements)
             {

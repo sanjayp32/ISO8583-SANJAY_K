@@ -47,7 +47,7 @@
     <Compile Include="EmvTags.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="MessageFactory.cs" />
-    <Compile Include="PinPanBlock.cs" />
+    <Compile Include="PinTranslator.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
