@@ -7,7 +7,7 @@ namespace Iso_sanjay
 {
     class PinPanBlock
     {
-        public static string PanBlock(string track2Data)
+        private static string PanBlock(string track2Data)
         {
             string[] parts = track2Data.Split('=');
             string pannum = parts[0].Substring(1);
@@ -26,7 +26,7 @@ namespace Iso_sanjay
             }
             return pannum;
         }
-        public static string PinBlock(string pin)
+        private static string PinBlock(string pin)
         {
             int len = pin.Length; string pinblock = "";
             if (len >= 10)
@@ -43,7 +43,7 @@ namespace Iso_sanjay
             }
             return pinblock;
         }
-        public static string PinpanBlock(string hexString1, string hexString2)
+        private static string PinpanBlock(string hexString1, string hexString2)
         {
             if (hexString1.Length != hexString2.Length)
                 throw new ArgumentException("Input strings must have the same length.");
@@ -60,7 +60,7 @@ namespace Iso_sanjay
             return new string(result);
 
         }
-        public static byte[] HexStringToByteArray(string hex)
+        private static byte[] HexStringToByteArray(string hex)
         {
             int byteCount = hex.Length / 2;
             byte[] bytes = new byte[byteCount];
@@ -70,7 +70,7 @@ namespace Iso_sanjay
             }
             return bytes;
         }
-        public static string ByteArrayToHexString(byte[] bytes)
+        private static string ByteArrayToHexString(byte[] bytes)
         {
             StringBuilder hex = new StringBuilder(bytes.Length * 2);
             foreach (byte b in bytes)

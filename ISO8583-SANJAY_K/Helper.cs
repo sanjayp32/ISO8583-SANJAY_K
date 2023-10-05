@@ -2,10 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace ISO
 {
@@ -48,7 +45,6 @@ namespace ISO
         internal static string BitArrayToHexadecimalString(BitArray bitArray)
         {
             int padding = 4 - (bitArray.Length % 4);
-
             if (padding != 4)
             {
                 BitArray paddedBits = new BitArray(bitArray.Length + padding);
@@ -58,11 +54,9 @@ namespace ISO
                 }
                 bitArray = paddedBits;
             }
-
             int numBytes = bitArray.Length / 8;
             byte[] bytes = new byte[numBytes];
             bitArray.CopyTo(bytes, 0);
-
             return BitConverter.ToString(bytes).Replace("-", "");
         }
         internal static String PrepareVariableFieldData(DataElement de)

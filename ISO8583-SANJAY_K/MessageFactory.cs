@@ -16,7 +16,8 @@ namespace ISO
         SignOn,
         SignOff,
         BalanceInquiry,
-        CashWithdrawal
+        CashWithdrawal,
+        Emv
     }
 
     internal class MessageFactory
@@ -37,6 +38,9 @@ namespace ISO
                     break;
                 case RequiredMsg.CashWithdrawal:
                     message = CashWithdrawal();
+                    break;
+                 case RequiredMsg.Emv:
+                    EmvTags.Emv();
                     break;
                 default:
                     Console.Write("Option invalid.");

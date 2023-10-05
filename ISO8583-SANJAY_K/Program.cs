@@ -9,7 +9,7 @@ class Programs
 {
     static void Main(string[] args)
     {
-        Console.WriteLine("Enter Message Option: 1 -> SignOn, 2 -> SignOff, 3 -> BalanceInquiry, 4 -> CashWithdrawal, Exit -> To Exit The Program");
+        Console.WriteLine("Enter Message Option: \n1 -> SignOn\n2 -> SignOff\n3 -> BalanceInquiry\n4 -> CashWithdrawal\n5 -> EmvTags\n6 -> Exit -> To Exit The Program");
 
         int msgRequired = 0;
 
