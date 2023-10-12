@@ -254,9 +254,10 @@ class EmvTags
                 {
                     Id = tagId, // Use only the tagId without tagIdSecondHalf
                     Length = tagLengthValue,
-                    Value = "Invalid Length given by the user",
+                    Value = tagValue,
                     Name = GetTagName(emvTags, tagId) // Get the name from the emvTags list
                 };
+
             }
             else
             {
@@ -264,9 +265,10 @@ class EmvTags
                 {
                     Id = tagId, // Use only the tagId without tagIdSecondHalf
                     Length = tagLengthValue,
-                    Value = tagValue,
+                    Value = "Invalid Length given by the user",
                     Name = GetTagName(emvTags, tagId) // Get the name from the emvTags list
                 };
+               
             }
             Tags.Add(emvTag);
         }
