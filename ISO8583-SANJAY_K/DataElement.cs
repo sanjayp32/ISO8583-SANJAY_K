@@ -19,7 +19,6 @@ namespace sanjay
         public int PositionInTheMsg { get; set; }
         public string Name { get; set; }
         public string Value { get; set; }
-        public LengthType FieldLength { get; set; }
         public LengthType FieldLengthRepresentation { get; set; }
     }
 }

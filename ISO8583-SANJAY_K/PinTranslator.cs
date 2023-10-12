@@ -7,7 +7,7 @@ namespace Iso_sanjay
 {
     class PinTranslator
     {
-       private static string PanBlock(string track2Data)
+        private static string PanBlock(string track2Data)
         {
             String clearPinBlock = string.Empty;
             string pan = string.Empty;
@@ -38,7 +38,6 @@ namespace Iso_sanjay
             else
             {
                 clearPinBlock = account.PadLeft(16, '0');
-
                 return clearPinBlock;
             }
         }
