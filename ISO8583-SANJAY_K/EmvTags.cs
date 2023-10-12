@@ -184,7 +184,7 @@ class EmvTags
                 new TLV { Id = "DF52", Name = "Preferred Iris Attempt",Length=1, TagLengthRep = TagLengthType.Fixed},
                 new TLV { Id = "DF53", Name = "Preferred Palm Attempts",Length=1, TagLengthRep = TagLengthType.Fixed},
                 new TLV { Id = "DF54", Name = "Preferred Voice Attempts",Length=1, TagLengthRep = TagLengthType.Fixed},
-              //new TLV { Id = "9F4B", Name = "Signed Dynamic Application Data",Length=0},//->N1C->Pg.no:156
+              // new TLV { Id = "9F4B", Name = "Signed Dynamic Application Data",Length=0},//->N1C->Pg.no:156
               //new TLV { Id = "93",   Name = "Signed Static Application Data",Length=0},//->N1C->Pg.no:156
                 new TLV { Id = "9F4A", Name = "Static Data Authentication Tag List",TagLengthRep = TagLengthType.Variable},//-VAR
                 new TLV { Id = "9F19", Name = "Token Requestor ID",Length=6, TagLengthRep = TagLengthType.Fixed},
@@ -202,7 +202,7 @@ class EmvTags
                
             };
 
-            List<TLV> Tags = ParseEMVData(emvData, emvTags);
+            (List<TLV> Tags,string ARQCdata) = ParseEMVData(emvData, emvTags);
 
             // Print the parsed tags
             Console.WriteLine("Tags are:\n");
@@ -213,6 +213,7 @@ class EmvTags
                 Console.WriteLine($"Tag Name: {tag.Name}");
                 Console.WriteLine($"Tag Value: {tag.Value}\n");
             }
+            Console.WriteLine(ARQCdata);
         }
         catch (Exception ex)
         {
@@ -222,11 +223,11 @@ class EmvTags
         Console.ReadLine();
     }
 
-    private static List<TLV> ParseEMVData(string emvData, List<TLV> emvTags)
+    private static (List<TLV>,string) ParseEMVData(string emvData, List<TLV> emvTags)
     {
         List<TLV> Tags = new List<TLV>();
         int index = 0;
-
+        string ARQCdata = "";
         while (index < emvData.Length)
         {
             string tagId = emvData.Substring(index, 2);
@@ -246,6 +247,7 @@ class EmvTags
             bool a = Operation(reqTagSpec, tagId, tagLengthValue);
             index += 2;
             string tagValue = emvData.Substring(index, tagLengthValue * 2);
+            ARQCdata=ARQCdata + tagValue;
             index += tagLengthValue * 2;
             TLV emvTag = new TLV() { };
             if (a == true)
@@ -272,7 +274,7 @@ class EmvTags
             }
             Tags.Add(emvTag);
         }
-        return Tags;
+        return (Tags,ARQCdata);
     }
 
     private static string GetTagName(List<TLV> emvTags, string tagId)
