@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ISO8583_SANJAY_K;
+using System;
 using System.CodeDom;
 using System.Collections.Generic;
 using System.IO;
@@ -25,10 +26,9 @@ class EmvTags
 {
     public static void Emv()
     {
-        string filePath = "emv.txt";
         try
         {
-            string emvData = File.ReadAllText(filePath);
+            string emvData = "9F02060000035000009F03060000000000009F1A0206825F2A0206829A032310119C01019F37045812D32E82027C009F36027778";
             List<TLV> emvTags = new List<TLV>
             {
                 //Already having
@@ -203,7 +203,6 @@ class EmvTags
             };
 
             (List<TLV> Tags,string ARQCdata) = ParseEMVData(emvData, emvTags);
-
             // Print the parsed tags
             Console.WriteLine("Tags are:\n");
             foreach (var tag in Tags)
@@ -213,14 +212,12 @@ class EmvTags
                 Console.WriteLine($"Tag Name: {tag.Name}");
                 Console.WriteLine($"Tag Value: {tag.Value}\n");
             }
-            Console.WriteLine(ARQCdata);
+            Arqc.ARQC(ARQCdata);
         }
         catch (Exception ex)
         {
             Console.WriteLine($"An error occurred: {ex.Message}");
         }
-
-        Console.ReadLine();
     }
 
     private static (List<TLV>,string) ParseEMVData(string emvData, List<TLV> emvTags)
@@ -283,7 +280,7 @@ class EmvTags
         var tag = emvTags.Find(t => t.Id == tagId);
         return tag?.Name ?? "";
     }
-    private static TLV FindTag(List<TLV> tagSpecs, string tagId)
+    private static TLV FindTag(List<TLV> tagSpecs, string tagId)   
     {
         var tag = tagSpecs.Where(x => x.Id == tagId).FirstOrDefault();
         return tag;

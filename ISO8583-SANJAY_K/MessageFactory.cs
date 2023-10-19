@@ -1,4 +1,5 @@
 ﻿using Iso_sanjay;
+using ISO8583_SANJAY_K;
 using sanjay;
 using System;
 using System.Collections;
@@ -17,13 +18,15 @@ namespace ISO
         SignOff,
         BalanceInquiry,
         CashWithdrawal,
-        Emv
+        Emv,
+        Arqc
     }
 
     internal class MessageFactory
     {
         internal static string ConstructMessage(RequiredMsg reqMsg)
         {
+          
             string message = string.Empty;
             switch (reqMsg)
             {
@@ -196,9 +199,6 @@ namespace ISO
             }
             return Helper.BitArrayToHexadecimalString(bits);
         }
-
-
-
     }
 
 }

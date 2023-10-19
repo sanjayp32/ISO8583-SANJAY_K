@@ -87,7 +87,7 @@ namespace Iso_sanjay
             }
             return hex.ToString();
         }
-        public static byte[] Encrypt3DES(byte[] data, byte[] key)
+        private static byte[] Encrypt3DES(byte[] data, byte[] key)
         {
             using (TripleDESCryptoServiceProvider desProvider = new TripleDESCryptoServiceProvider())
             {
