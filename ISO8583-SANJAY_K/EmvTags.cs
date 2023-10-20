@@ -184,7 +184,7 @@ class EmvTags
                 new TLV { Id = "DF52", Name = "Preferred Iris Attempt",Length=1, TagLengthRep = TagLengthType.Fixed},
                 new TLV { Id = "DF53", Name = "Preferred Palm Attempts",Length=1, TagLengthRep = TagLengthType.Fixed},
                 new TLV { Id = "DF54", Name = "Preferred Voice Attempts",Length=1, TagLengthRep = TagLengthType.Fixed},
-              // new TLV { Id = "9F4B", Name = "Signed Dynamic Application Data",Length=0},//->N1C->Pg.no:156
+              //new TLV { Id = "9F4B", Name = "Signed Dynamic Application Data",Length=0},//->N1C->Pg.no:156
               //new TLV { Id = "93",   Name = "Signed Static Application Data",Length=0},//->N1C->Pg.no:156
                 new TLV { Id = "9F4A", Name = "Static Data Authentication Tag List",TagLengthRep = TagLengthType.Variable},//-VAR
                 new TLV { Id = "9F19", Name = "Token Requestor ID",Length=6, TagLengthRep = TagLengthType.Fixed},
@@ -273,7 +273,6 @@ class EmvTags
         }
         return (Tags,ARQCdata);
     }
-
     private static string GetTagName(List<TLV> emvTags, string tagId)
     {
         // Find the tag with the specified tagId and return its Name property

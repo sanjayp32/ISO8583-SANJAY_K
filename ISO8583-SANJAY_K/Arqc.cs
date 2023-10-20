@@ -8,7 +8,6 @@ using Org.BouncyCastle.Crypto.Paddings;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Utilities.Encoders;
 using System.Security.Cryptography;
-using System.Text;
 
 namespace ISO8583_SANJAY_K
 {
@@ -16,7 +15,7 @@ namespace ISO8583_SANJAY_K
     {
         public static void ARQC(string ARQCdata)
         {
-            string mdk = "7B3D21A4F9C2E0563A9D5B1F8E4C7B9D";
+            string mdk = "754CA10145294FE352EC852F3DCE7C5B";
             string dki = "01";
             string track2data = ";5351290102107506=21112011557206710000?";
             string cardnum = Cardnum(track2data);
@@ -27,8 +26,8 @@ namespace ISO8583_SANJAY_K
             string xorvalue = XOR(concatenate,"ffffffffffffffff");
             string UDK_B = Encrypt3DES(xorvalue, mdk);
             string Final_UDK = UDK_A + UDK_B;
-            string sessionkey = Session_Key(Final_UDK);
-            sessionkey = "754CA10145294FE352EC852F3DCE7C5B";//SessionKey as Given same as mdk
+            string sessionkey = Final_UDK;
+            sessionkey = mdk;//As given in the Notepad.
             Console.WriteLine("The sessionkey is " + sessionkey);
             Console.WriteLine("The Generated ARQC is "+Operation(ARQCdata, sessionkey));
         }
@@ -89,15 +88,15 @@ namespace ISO8583_SANJAY_K
             string resultHexString = BitConverter.ToString(resultBytes).Replace("-", "").ToLower();
             return resultHexString;
         }
-        private static string Session_Key(string Final_UDk)
-        {
-            string R1 = "0001F00000000000";
-            string R2 = "00010F0000000000";
-            string SKA = Encrypt3DES(R1, Final_UDk);
-            string SKB = Encrypt3DES(R2, Final_UDk);
-            string Sessionkey = SKA + SKB;
-            return Sessionkey;
-        }
+        //private static string Session_Key(string Final_UDk)
+        //{
+        //    string R1 = "0001F00000000000";
+        //    string R2 = "00010F0000000000";
+        //    string SKA = Encrypt3DES(R1, Final_UDk);
+        //    string SKB = Encrypt3DES(R2, Final_UDk);
+        //    string Sessionkey = SKA + SKB;
+        //    return Sessionkey;
+        //}
         private static string DESEncrypt(string data,string key)
         {
             byte[] dataBytes = Hex.Decode(data);
@@ -112,7 +111,7 @@ namespace ISO8583_SANJAY_K
             string encryptedResult = Hex.ToHexString(output).ToUpper();
             return encryptedResult;
 
-        }
+        } 
         private static string DESDecrypt(string encryptedData, string key)
         {
             byte[] dataBytes = Hex.Decode(encryptedData);
@@ -146,7 +145,7 @@ namespace ISO8583_SANJAY_K
                 if (rem != 0)
                 {
                     ARQCdata = ARQCdata + "0";
-                    len = ARQCdata.Length;
+                    len = ARQCdata.Length;  
                     rem = len % 8;
                 }
                 if (rem == 0)
