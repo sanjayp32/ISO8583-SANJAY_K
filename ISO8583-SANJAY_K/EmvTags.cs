@@ -26,9 +26,10 @@ class EmvTags
 {
     public static void Emv()
     {
+        string filepath = "emv.txt";
         try
         {
-            string emvData = "9F02060000035000009F03060000000000009F1A0206825F2A0206829A032310119C01019F37045812D32E82027C009F36027778";
+            string emvData = File.ReadAllText(filepath);
             List<TLV> emvTags = new List<TLV>
             {
                 //Already having
@@ -212,7 +213,6 @@ class EmvTags
                 Console.WriteLine($"Tag Name: {tag.Name}");
                 Console.WriteLine($"Tag Value: {tag.Value}\n");
             }
-            Arqc.ARQC(ARQCdata);
         }
         catch (Exception ex)
         {
