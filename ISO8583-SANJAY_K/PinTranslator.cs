@@ -9,7 +9,7 @@ namespace Iso_sanjay
     {
         private static string PanBlock(string track2Data)
         {
-            String clearPinBlock = string.Empty;
+            string clearPinBlock = string.Empty;
             string pan = string.Empty;
 
             var index = track2Data.IndexOf('=');
