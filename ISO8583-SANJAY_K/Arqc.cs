@@ -25,8 +25,8 @@ namespace ISO8583_SANJAY_K
                 new TLV { Id = "9A", Name = "Transaction Date", Value = "231023" },
                 new TLV { Id = "9C", Name = "Transaction Type", Value = "31" },
                 //Keeps Changing 
-                new TLV { Id = "9F37", Name = "Unpredictable Number", Value = "" },
-                new TLV { Id = "82", Name = "Application Interchange Profile", Value = "" },
+                new TLV { Id = "9F37", Name = "Unpredictable Number", Value = "01613B75" },
+                new TLV { Id = "82", Name = "Application Interchange Profile", Value = "3800" },
 
                 new TLV { Id = "9F36", Name = "Application Transaction Counter (ATC)", Value = "000F" },
 
@@ -47,18 +47,22 @@ namespace ISO8583_SANJAY_K
             string str = "";
             foreach (TLV i in arqclist)
             {
-                if(i.Id=="9F37")
-                {
-                    Console.WriteLine("Enter the Unpredictable number :");
-                    i.Value=Console.ReadLine();
-                }
-                if (i.Id == "82")
-                {
-                    Console.WriteLine("Enter the Application Interchange Profile:");
-                    i.Value = Console.ReadLine();
-                }
                 str = str + i.Value;
             }
+            //foreach (TLV i in arqclist)
+            //{
+            //    if(i.Id=="9F37")
+            //    {
+            //        Console.WriteLine("Enter the Unpredictable number :");
+            //        i.Value=Console.ReadLine();
+            //    }
+            //    if (i.Id == "82")
+            //    {
+            //        Console.WriteLine("Enter the Application Interchange Profile:");
+            //        i.Value = Console.ReadLine();
+            //    }
+            //    str = str + i.Value;
+            //}
             Console.WriteLine("The sessionkey is " + sessionkey);
             Console.WriteLine("The Generated ARQC is " + Operation(str, sessionkey));
         }
