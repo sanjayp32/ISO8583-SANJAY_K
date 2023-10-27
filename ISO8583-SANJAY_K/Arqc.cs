@@ -25,10 +25,10 @@ namespace ISO8583_SANJAY_K
                 new TLV { Id = "9A", Name = "Transaction Date", Value = "231023" },
                 new TLV { Id = "9C", Name = "Transaction Type", Value = "31" },
                 //Keeps Changing 
-                new TLV { Id = "9F37", Name = "Unpredictable Number", Value = "01613B75" },
+                new TLV { Id = "9F37", Name = "Unpredictable Number", Value = "" },
                 new TLV { Id = "82", Name = "Application Interchange Profile", Value = "3800" },
-
-                new TLV { Id = "9F36", Name = "Application Transaction Counter (ATC)", Value = "000F" },
+                //keeps Cahnging
+                new TLV { Id = "9F36", Name = "Application Transaction Counter (ATC)", Value = "" },
 
                 //new TLV { Id = "9F10", Name = "Issuer Application Data", Value = "3800" };  CVR(011203A0880000)
         };
@@ -43,26 +43,31 @@ namespace ISO8583_SANJAY_K
             string xorvalue = XOR(concatenate, "ffffffffffffffff");
             string UDK_B = Encrypt3DES(xorvalue, mdk);
             string Final_UDK = UDK_A + UDK_B;
-            string sessionkey = Session_Key(Final_UDK);          
-            string str = "";
-            foreach (TLV i in arqclist)
-            {
-                str = str + i.Value;
-            }
+            string str = "",sessionval="";
             //foreach (TLV i in arqclist)
             //{
-            //    if(i.Id=="9F37")
-            //    {
-            //        Console.WriteLine("Enter the Unpredictable number :");
-            //        i.Value=Console.ReadLine();
-            //    }
-            //    if (i.Id == "82")
-            //    {
-            //        Console.WriteLine("Enter the Application Interchange Profile:");
-            //        i.Value = Console.ReadLine();
-            //    }
             //    str = str + i.Value;
+            //    if(i.Id=="9F36")
+            //    {
+            //        sessionval= i.Value;
+            //    }
             //}
+            foreach (TLV i in arqclist)
+            {              
+                if(i.Id=="9F37")
+                {
+                    Console.WriteLine("Enter the Unpredictable number :");
+                    i.Value=Console.ReadLine();
+                }
+                if (i.Id == "9F36")
+                {
+                    Console.WriteLine("Enter the Application Transaction Counter (ATC):");
+                    i.Value = Console.ReadLine();
+                    sessionval = i.Value;
+                }
+                str = str + i.Value;
+            }
+            string sessionkey = Session_Key(Final_UDK,sessionval);
             Console.WriteLine("The sessionkey is " + sessionkey);
             Console.WriteLine("The Generated ARQC is " + Operation(str, sessionkey));
         }
@@ -122,10 +127,10 @@ namespace ISO8583_SANJAY_K
             string resultHexString = BitConverter.ToString(resultBytes).Replace("-", "").ToLower();
             return resultHexString;
         }
-        private static string Session_Key(string Final_UDk)
+        private static string Session_Key(string Final_UDk,string sessionval)
         {
-            string R1 = "000FF00000000000";
-            string R2 = "000F0F0000000000";
+            string R1 = $"{sessionval}F00000000000";
+            string R2 = $"{sessionval}0F0000000000";
             string SKA = Encrypt3DES(R1, Final_UDk);
             //Console.WriteLine(SKA);
             string SKB = Encrypt3DES(R2, Final_UDk);
@@ -166,8 +171,6 @@ namespace ISO8583_SANJAY_K
             string decryptedResult = Hex.ToHexString(output).ToUpper();
             return decryptedResult.Substring(0, 16);
         }
-
-
         private static string Operation(string ARQCdata, string sessionkey)
         {
             Console.WriteLine("The CDOL data before padding is " + ARQCdata);
@@ -205,11 +208,14 @@ namespace ISO8583_SANJAY_K
                 string chunk = Desdata.Substring(i, Math.Min(16, Desdata.Length - i));
                 chunks.Add(chunk);
             }
+            foreach (string chunk in chunks)
+            {
+                Console.WriteLine(chunk);
+            }
             int lenn = chunks.Count;
             string str = DESDecrypt(chunks[lenn - 2], session2);
             string str1 = DESEncrypt(str, session1);
             return str1.Substring(0, 16);
         }
-
     }
 }
