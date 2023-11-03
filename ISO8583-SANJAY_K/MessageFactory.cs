@@ -42,7 +42,7 @@ namespace ISO
                 case RequiredMsg.CashWithdrawal:
                     message = CashWithdrawal();
                     break;
-                 case RequiredMsg.Emv:
+                case RequiredMsg.Emv:
                     EmvTags.Emv();
                     break;
                 case RequiredMsg.Arqc:

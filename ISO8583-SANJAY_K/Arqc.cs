@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Text;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Engines;
 using Org.BouncyCastle.Crypto.Modes;
@@ -25,44 +26,40 @@ namespace ISO8583_SANJAY_K
                 new TLV { Id = "9A", Name = "Transaction Date", Value = "231023" },
                 new TLV { Id = "9C", Name = "Transaction Type", Value = "31" },
                 //Keeps Changing 
-                new TLV { Id = "9F37", Name = "Unpredictable Number", Value = "" },
+                new TLV { Id = "9F37", Name = "Unpredictable Number", Value = "01613B75" },
                 new TLV { Id = "82", Name = "Application Interchange Profile", Value = "3800" },
                 //keeps Cahnging
-                new TLV { Id = "9F36", Name = "Application Transaction Counter (ATC)", Value = "" },
+                new TLV { Id = "9F36", Name = "Application Transaction Counter (ATC)", Value = "000F" },
 
                 //new TLV { Id = "9F10", Name = "Issuer Application Data", Value = "3800" };  CVR(011203A0880000)
-        };
+            };
             string mdk = "6E46FE409DF704BCA75E7FF270B65E73";
             string dki = "01";
             string track2data = ";4226810000000010=21112011557206710000?";
             string cardnum = Cardnum(track2data);
-            string seqno = dki;
-            string concatenate = cardnum + seqno;
+            string concatenate = cardnum + dki;
             concatenate = concatenate.Substring(2);
             string UDK_A = Encrypt3DES(concatenate, mdk);
             string xorvalue = XOR(concatenate, "ffffffffffffffff");
             string UDK_B = Encrypt3DES(xorvalue, mdk);
             string Final_UDK = UDK_A + UDK_B;
-            string str = "",sessionval="";
-            //foreach (TLV i in arqclist)
-            //{
-            //    str = str + i.Value;
-            //    if(i.Id=="9F36")
-            //    {
-            //        sessionval= i.Value;
-            //    }
-            //}
+            string str = "", sessionval = "";
             foreach (TLV i in arqclist)
             {              
-                if(i.Id=="9F37")
-                {
-                    Console.WriteLine("Enter the Unpredictable number :");
-                    i.Value=Console.ReadLine();
-                }
+                //if(i.Id=="9F37")
+                //{
+                //    Console.WriteLine("Enter the Unpredictable number :");
+                //    i.Value=Console.ReadLine();
+                //    i.Value
+                //}
+                //if (i.Id == "9F36")
+                //{
+                //    Console.WriteLine("Enter the Application Transaction Counter (ATC):");
+                //    i.Value = Console.ReadLine();
+                //    sessionval = i.Value;
+                //}
                 if (i.Id == "9F36")
-                {
-                    Console.WriteLine("Enter the Application Transaction Counter (ATC):");
-                    i.Value = Console.ReadLine();
+                {                  
                     sessionval = i.Value;
                 }
                 str = str + i.Value;
@@ -88,7 +85,7 @@ namespace ISO8583_SANJAY_K
                 byte[] data = new byte[byteCount];
                 for (int i = 0; i < byteCount; i++)
                 {
-                    data[i] = Convert.ToByte(datastr.Substring(i * 2, 2), 16);
+                      data[i] = Convert.ToByte(datastr.Substring(i * 2, 2), 16);
                 }
                 int byteCount1 = keystr.Length / 2;
                 byte[] key = new byte[byteCount1];
@@ -104,6 +101,7 @@ namespace ISO8583_SANJAY_K
                 byte[] bytes = encryptor.TransformFinalBlock(data, 0, data.Length);
                 string hex = string.Concat(bytes.Select(b => b.ToString("X2")));
                 return hex;
+                
             }
         }
         private static string XOR(string hexString1, string hexString2)
@@ -137,12 +135,36 @@ namespace ISO8583_SANJAY_K
             string Sessionkey = SKA + SKB;
             return Sessionkey;
         }
+        public static string FindMasterCardSessionKey(string mdk, string sessionval)
+        {
+            string combinedInput = mdk + sessionval;
+            byte[] inputBytes = Encoding.UTF8.GetBytes(combinedInput);
+            using (SHA256 sha256 = SHA256.Create())
+            {
+                byte[] hashBytes = sha256.ComputeHash(inputBytes);
+                string sessionKey = BitConverter.ToString(hashBytes).Replace("-", string.Empty);
+                return sessionKey;
+            }
+        }
+        public static string FindVisaEmv2000SessionKey(string mdk, string sessionval)
+        { 
+            string secretKey = "YourSecretKey";
+            string combinedInput = mdk + sessionval;
+            byte[] inputBytes = Encoding.UTF8.GetBytes(combinedInput);
+            byte[] keyBytes = Encoding.UTF8.GetBytes(secretKey);
+            using (HMACSHA256 hmac = new HMACSHA256(keyBytes))
+            {
+                byte[] hashBytes = hmac.ComputeHash(inputBytes);
+                string sessionKey = BitConverter.ToString(hashBytes).Replace("-", string.Empty);
+                return sessionKey;
+            }
+        }
         private static string DESEncrypt(string data, string key)
         {
             byte[] dataBytes = Hex.Decode(data);
             byte[] keyBytes = Hex.Decode(key);
             IBlockCipher desEngine = new DesEngine();
-            var cipher = new PaddedBufferedBlockCipher(new CbcBlockCipher(desEngine));
+            var cipher = new PaddedBufferedBlockCipher(new CbcBlockCipher(desEngine)); 
             var keyParam = new KeyParameter(keyBytes);
             cipher.Init(true, keyParam);
             byte[] output = new byte[cipher.GetOutputSize(dataBytes.Length)];
@@ -171,6 +193,8 @@ namespace ISO8583_SANJAY_K
             string decryptedResult = Hex.ToHexString(output).ToUpper();
             return decryptedResult.Substring(0, 16);
         }
+       
+
         private static string Operation(string ARQCdata, string sessionkey)
         {
             Console.WriteLine("The CDOL data before padding is " + ARQCdata);
@@ -179,25 +203,29 @@ namespace ISO8583_SANJAY_K
             int len = ARQCdata.Length;
             int rem = len % 8;
             bool rep = true;
-
-            while (rep)
+            if (rem == 0)
             {
-                if (rem == 0)
-                {
-                    ARQCdata = ARQCdata + "80" + "00000000000000";
-                    rep = false;
+                ARQCdata = ARQCdata + "80" + "00000000000000";
 
-                }
-                if (rem != 0)
+            }
+            if (rem != 0)
+            {
+                ARQCdata = ARQCdata + "80";
+                len = ARQCdata.Length;
+                rem = len % 8;
+                while(rep)
                 {
-                    ARQCdata = ARQCdata + "0";
-                    len = ARQCdata.Length;
-                    rem = len % 8;
-                }
-                if (rem == 0)
-                {
-                    rep = false;
-                }
+                    if (rem == 0) 
+                    {
+                        rep = false;
+                    }
+                    else
+                    {
+                        ARQCdata = ARQCdata + "0";
+                        len = ARQCdata.Length;
+                        rem = len % 8;
+                    }
+                }                
             }
             Console.WriteLine("The CDOL data after padding is " + ARQCdata);
             string session1 = sessionkey.Substring(0, 16);
